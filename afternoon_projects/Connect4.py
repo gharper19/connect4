@@ -135,7 +135,8 @@ def check_game_over():
         if result > -1: break
 
     if result > -1:
-        print(f"STOP!!\n... \nPlayer {result+1} WINS! {FILLED_CELL_LIST[result][1]}")
+        print(f"STOP!!\n... \n{FILLED_CELL_LIST[result][1]}")
+        run_player_win_sequence(result)
         return True
 
     # Check vertical chain
@@ -157,7 +158,8 @@ def check_game_over():
         if result > -1: break
 
     if result > -1:
-        print(f"STOP!!\n... \nPlayer {result+1} WINS! {FILLED_CELL_LIST[result][1]}")
+        print(f"STOP!!\n... \n{FILLED_CELL_LIST[result][1]}")
+        run_player_win_sequence(result)
         return True
 
     # Check diagonal chain
@@ -166,7 +168,8 @@ def check_game_over():
         result = FILLED_CELL_INDICIES[grid[matched_cell[0]][matched_cell[1]]]
 
     if result > -1:
-        print(f"STOP!!\n... \nPlayer {result+1} WINS! {FILLED_CELL_LIST[result][1]}")
+        print(f"STOP!!\n... \n{FILLED_CELL_LIST[result][1]}")
+        run_player_win_sequence(result)
         return True
 def check_diagonal_connect_four():
     def is_winning_diagonal(start_row, start_col, row_increment, col_increment):
@@ -223,6 +226,11 @@ def run_intro():
     intro_text = "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n" + "Connect 4 : Connect 4 to win!!\n" + "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n"
     print(intro_text)
 
+def run_player_win_sequence(player):
+    # Win text
+    win_text = "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n" + f"Player {player+1} WINS!! {FILLED_CELL_LIST[player][1]}\n" + "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n"
+    print(win_text)
+
 def main():
     global grid, current_player, total_players
     # global current_player
@@ -257,9 +265,10 @@ def main():
         if game_over:
             render_grid()
             resp = input("Play again? (y/n)")
-            if response == 'y':
+            if resp == 'y':
                 clear_grid()
                 run_intro()
+                current_player = 1
                 continue
             else:
                 break
