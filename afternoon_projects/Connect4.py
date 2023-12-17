@@ -19,12 +19,15 @@ import numbers
 # End of Game:
 
 # Display the winner or announce a draw at the end of the game.
-FILLED_CELL = '[0]'
+
+FILLED_CELL_1 = '[0]'
+FILLED_CELL_2 = '[O]'
+FILLED_CELL_LIST = [FILLED_CELL_1, FILLED_CELL_2]
 EMPTY_CELL = '[ ]'
 GRID_ROW_LENGTH = 43
 
-grid_columns = 6
-grid_rows = 7
+grid_columns = 7
+grid_rows = 6
 grid = [ 
     # 7-column, 6-row
     [EMPTY_CELL for i in range(grid_columns)] for j in range(grid_rows)
@@ -66,7 +69,7 @@ def render_grid():
     # print()
 
 def handle_player_input():
-    global grid_rows
+    global grid_rows, current_player
     input_validated = False
 
     # Get input
@@ -87,43 +90,46 @@ def handle_player_input():
 
             # Determine row selection from column selection
             for i in range(grid_rows):
-                if i == 1:
+                if i == 0:
                     # Check first row
-                    if grid[i][column_selection] == FILLED_CELL:
-                        print("Thats taken. Invalid")
+                    if grid[i][column_selection] in FILLED_CELL_LIST:
+                        print("Thats taken. Invalid.")
                         raise Exception
-                elif grid[i][column_selection] == FILLED_CELL:
-                    # Get previous row
+                elif grid[i][column_selection] in FILLED_CELL_LIST:
+                    # Get previous
                     row_selection = i-1
+                    break
 
         except Exception as e: 
+            # Check commands
+            if user_input == 'q':
+                return "QUIT"
+            
+            # Prompt and return to user input
             print("Unacceptable. Please enter a valid column number.\n"+ str(e))
             continue
         input_validated = True
 
-    # input_validated = False
-    # while(not input_validated):
-    #     # Get row selection
-    #     user_input = input("Enter the row of your selected cell: ")
-    #     try:    
-    #         # Validate row selection
-    #         assert isinstance(int(user_input), int)
-    #         user_input = int(user_input)
-    #         assert user_input <= grid_rows
-
-    #         row_selection = user_input-1
-    #     except Exception as e: 
-    #         print("Unacceptable. Please enter a valid row number.\n"+ str(e))
-    #         continue
-            
-    #     print(f"Selection ({column_selection+1},{row_selection+1}) confirmed.\n")
-    #     input_validated=True
-
     # Update grid
-    grid[column_selection][row_selection] = FILLED_CELL
+    grid[row_selection][column_selection] = FILLED_CELL_LIST[current_player-1]
 
 def check_game_over():
+    global grid
+    result = ""
     # Check if a player has won or if the board is full
+    
+    # Check board full
+    board_full = True
+    for i in range(grid_columns):
+        if grid[0][i] == EMPTY_CELL:
+            board_full = False
+    if board_full == False:
+        result = "DRAW"
+    
+    # Check player win
+    
+
+
     return False
 
 def end_game():
