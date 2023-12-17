@@ -21,9 +21,10 @@ import numbers
 # Display the winner or announce a draw at the end of the game.
 FILLED_CELL = '[0]'
 EMPTY_CELL = '[ ]'
+GRID_ROW_LENGTH = 43
 
-grid_columns = 7
-grid_rows = 6
+grid_columns = 6
+grid_rows = 7
 grid = [ 
     # 7-column, 6-row
     [EMPTY_CELL for i in range(grid_columns)] for j in range(grid_rows)
@@ -37,9 +38,18 @@ def render_ui():
     print(f"Player {current_player}'s turn...\n... GO!")
 
 def render_grid():
+    global grid, grid_columns
     delimiter = " | "
     render_string = ""
     
+    # Construct grid header
+    header_string = " | "
+    col_number = 1
+    for col in range(grid_columns):
+        header_string += " " + str(col_number) + " " + delimiter 
+        col_number += 1
+    print(header_string)
+
     # Contstruct render string
     for row in grid:
         render_string += delimiter
@@ -50,7 +60,13 @@ def render_grid():
     # Print string
     print(render_string)
 
+    # # Print tail string
+    # tail_string = "+="*((GRID_ROW_LENGTH-1)) + "+\n" + "|" + " "*(GRID_ROW_LENGTH-2) + "|"
+    # print(tail_string)
+    # print()
+
 def handle_player_input():
+    global grid_rows
     input_validated = False
 
     # Get input
@@ -62,55 +78,65 @@ def handle_player_input():
         user_input = input("Enter the column of your selected cell: ")
         try:    
             # Validate column selection
-            assert isinstance(user_input, numbers.Real)
+            assert isinstance(int(user_input), int)
             user_input = int(user_input)
             assert user_input <= grid_columns
 
+            # Convert to index
             column_selection = user_input-1
-        except Exception as e: 
-            print("Unacceptable. Please enter a valid column number.\n"+ e)
-            continue
 
-        # Get row selection
-        user_input = input("Enter the row of your selected cell: ")
-        try:    
-            # Validate row selection
-            assert isinstance(user_input, numbers.Real)
-            user_input = int(user_input)
-            assert user_input <= grid_rows
+            # Determine row selection from column selection
+            for i in range(grid_rows):
+                if i == 1:
+                    # Check first row
+                    if grid[i][column_selection] == FILLED_CELL:
+                        print("Thats taken. Invalid")
+                        raise Exception
+                elif grid[i][column_selection] == FILLED_CELL:
+                    # Get previous row
+                    row_selection = i-1
 
-            row_selection = user_input-1
         except Exception as e: 
-            print("Unacceptable. Please enter a valid row number.\n"+ e)
+            print("Unacceptable. Please enter a valid column number.\n"+ str(e))
             continue
+        input_validated = True
+
+    # input_validated = False
+    # while(not input_validated):
+    #     # Get row selection
+    #     user_input = input("Enter the row of your selected cell: ")
+    #     try:    
+    #         # Validate row selection
+    #         assert isinstance(int(user_input), int)
+    #         user_input = int(user_input)
+    #         assert user_input <= grid_rows
+
+    #         row_selection = user_input-1
+    #     except Exception as e: 
+    #         print("Unacceptable. Please enter a valid row number.\n"+ str(e))
+    #         continue
             
-        print(f"Selection ({column_selection+1},{row_selection+1}) confirmed.")
-        input_validated=True
-    
+    #     print(f"Selection ({column_selection+1},{row_selection+1}) confirmed.\n")
+    #     input_validated=True
+
     # Update grid
     grid[column_selection][row_selection] = FILLED_CELL
 
-def update_grid():
-    pass
-
 def check_game_over():
     # Check if a player has won or if the board is full
-    pass
+    return False
 
 def end_game():
-    end_string = "STOP!!\n" + 
-                "... \n" +
-                f"Player {current_player} WINS!!!"
+    end_string = "STOP!!\n" + "... \n" + f"Player {current_player} WINS!!!"
     print(end_string)
 
 def main():
+    global grid, current_player, total_players
     # global current_player
     run_flag = True
 
     # Intro text
-    intro_text = "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n" +
-                "Connect 4 : Connect 4 to win!!\n" +
-                "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n"
+    intro_text = "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n" + "Connect 4 : Connect 4 to win!!\n" + "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n"
     print(intro_text)
 
     # Initialize Game
@@ -136,7 +162,7 @@ def main():
             current_player = 1
 
         # Check if game is over
-        game_over = check_winner_exists()
+        game_over = check_game_over()
         if game_over: 
             end_game()
             break
