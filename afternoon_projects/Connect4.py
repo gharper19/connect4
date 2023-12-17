@@ -44,6 +44,12 @@ def render_grid():
     # Print string
     print(render_string)
 
+def clear_grid():
+    global grid
+    grid = [
+        # 7-column, 6-row
+        [EMPTY_CELL for i in range(grid_columns)] for j in range(grid_rows)
+    ]
 
 def handle_player_input():
     global grid_rows, current_player
@@ -107,7 +113,6 @@ def check_game_over():
     if result == 0:
         print("Draw! No winner.")
         return True
-
 
     # Check player win
     # Check horizontal chain
@@ -213,14 +218,17 @@ def test_diagonal():
     match_found = check_diagonal_connect_four()
     print(match_found)
 
+def run_intro():
+    # Intro text
+    intro_text = "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n" + "Connect 4 : Connect 4 to win!!\n" + "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n"
+    print(intro_text)
+
 def main():
     global grid, current_player, total_players
     # global current_player
     run_flag = True
 
-    # Intro text
-    intro_text = "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n" + "Connect 4 : Connect 4 to win!!\n" + "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n"
-    print(intro_text)
+    run_intro()
 
     # Initialize Game
     current_player = 1
@@ -248,7 +256,13 @@ def main():
         game_over = check_game_over()
         if game_over:
             render_grid()
-            break
+            resp = input("Play again? (y/n)")
+            if response == 'y':
+                clear_grid()
+                run_intro()
+                continue
+            else:
+                break
 
 
 if __name__ == '__main__':
