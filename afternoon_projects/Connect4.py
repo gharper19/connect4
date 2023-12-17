@@ -178,65 +178,65 @@ def check_game_over():
         return True
 
     # Check diagonal chain
-    # match_found = False
-    # for row in range(grid_rows):
-    #     for col in range(grid_columns):
-    #         # Check diagonal cells in SE direction
-    #         resp = check_diagonal_match(1,
-    #                                  (row, col),
-    #                                  (row+1, col+1),
-    #                                  1,
-    #                                  1)
-    #         if (resp > (-1, -1)):
-    #             result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-    #             match_found = True
-    #             break
-    #
-    #         # Check diagonal cells in NE direction
-    #         resp = check_diagonal_match(1,
-    #                                  (row, col),
-    #                                  (row-1, col+1),
-    #                                  -1,
-    #                                  1)
-    #         if (resp > (-1, -1)):
-    #             result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-    #             match_found = True
-    #             break
-    #
-    #         # Check diagonal cells in SW direction
-    #         resp = check_diagonal_match(1,
-    #                                  (row, col),
-    #                                  (row+1, col-1),
-    #                                  1,
-    #                                  -1)
-    #         if (resp > (-1, -1)):
-    #             result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-    #             match_found = True
-    #             break
-    #
-    #         # Check diagonal cells in NW direction
-    #         resp = check_diagonal_match(1,
-    #                                  (row, col),
-    #                                  (row-1, col-1),
-    #                                  -1,
-    #                                  -1)
-    #         if (resp > (-1, -1)):
-    #             result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-    #             match_found = True
-    #             break
-    #     if match_found:
-    #         break
-    #
-    # if result > -1:
-    #     print(f"STOP!!\n... \nPlayer {result+1} WINS! {FILLED_CELL_LIST[result][1]}")
-    #     return True
+    match_found = False
+    for row in range(grid_rows):
+        for col in range(grid_columns):
+            # Check diagonal cells in SE direction
+            resp = check_diagonal_match(1,
+                                     (row, col),
+                                     (row+1, col+1),
+                                     1,
+                                     1)
+            if (resp > (-1, -1)):
+                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
+                match_found = True
+                break
+
+            # Check diagonal cells in NE direction
+            resp = check_diagonal_match(1,
+                                     (row, col),
+                                     (row-1, col+1),
+                                     -1,
+                                     1)
+            if (resp > (-1, -1)):
+                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
+                match_found = True
+                break
+
+            # Check diagonal cells in SW direction
+            resp = check_diagonal_match(1,
+                                     (row, col),
+                                     (row+1, col-1),
+                                     1,
+                                     -1)
+            if (resp > (-1, -1)):
+                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
+                match_found = True
+                break
+
+            # Check diagonal cells in NW direction
+            resp = check_diagonal_match(1,
+                                     (row, col),
+                                     (row-1, col-1),
+                                     -1,
+                                     -1)
+            if (resp > (-1, -1)):
+                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
+                match_found = True
+                break
+        if match_found:
+            break
+
+    if result > -1:
+        print(f"STOP!!\n... \nPlayer {result+1} WINS! {FILLED_CELL_LIST[result][1]}")
+        return True
 def check_diagonal_match(count, cell, target, increment_row, increment_col):
     # Checks for a sequential match of 4 in the direction set by incrementing values
     # Count should be passed in as 1 initially, as each non-empty cell is the 1st item in the start of its own chain
     # Validate target increment values to make sure we have not hit the edge of the grid
-    if target[0] > grid_rows - 1:
+    if target[0] > grid_rows - 1 or target[0] < 0:
         return (-1, -1)
-    if target[1] > grid_columns - 1:
+    if target[1] > grid_columns - 1 or target[1] < 0:
         return (-1, -1)
 
     if cell == EMPTY_CELL:
@@ -253,15 +253,19 @@ def check_diagonal_match(count, cell, target, increment_row, increment_col):
         else:
             count = 1
 
-
-    # Move to next cell
-    return check_diagonal_match(
+    result = check_diagonal_match(
         count,
         target,
         (target[0] + increment_row, target[1] + increment_col),
         increment_row,
         increment_col
     )
+
+    if result != (-1, -1):
+        return result
+
+    # If no match found in the recursive call, continue the search
+    return (-1, -1)
 
 def test_diagonal():
     global grid
@@ -360,5 +364,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    # test_diagonal()
+    # main()
+    test_diagonal()
