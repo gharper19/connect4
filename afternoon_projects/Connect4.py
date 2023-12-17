@@ -1,26 +1,4 @@
-import numbers
-
-# # Connect4
-# Board Representation:
-
-
-# Implement a function to get input from players. Make sure to validate the input (e.g., ensure the column is not full, accept only valid column numbers).
-# Making Moves:
-
-# Write a function to update the board based on the player's move.
-# Check for a Win:
-
-# Implement a function to check if a player has won the game. This involves checking for four consecutive discs in a row, column, or diagonal.
-# Switching Players:
-
-# Write a mechanism to switch between players after each move.
-# Main Game Loop:
-
-# Create a loop to keep the game running until there's a winner or the board is full (resulting in a draw).
-# End of Game:
-
-# Display the winner or announce a draw at the end of the game.
-
+# Connect4
 FILLED_CELL_1 = '[◎]'
 FILLED_CELL_2 = '[◍]'
 FILLED_CELL_LIST = [FILLED_CELL_1, FILLED_CELL_2]
@@ -178,94 +156,50 @@ def check_game_over():
         return True
 
     # Check diagonal chain
-    match_found = False
-    for row in range(grid_rows):
-        for col in range(grid_columns):
-            # Check diagonal cells in SE direction
-            resp = check_diagonal_match(1,
-                                     (row, col),
-                                     (row+1, col+1),
-                                     1,
-                                     1)
-            if (resp > (-1, -1)):
-                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-                match_found = True
-                break
-
-            # Check diagonal cells in NE direction
-            resp = check_diagonal_match(1,
-                                     (row, col),
-                                     (row-1, col+1),
-                                     -1,
-                                     1)
-            if (resp > (-1, -1)):
-                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-                match_found = True
-                break
-
-            # Check diagonal cells in SW direction
-            resp = check_diagonal_match(1,
-                                     (row, col),
-                                     (row+1, col-1),
-                                     1,
-                                     -1)
-            if (resp > (-1, -1)):
-                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-                match_found = True
-                break
-
-            # Check diagonal cells in NW direction
-            resp = check_diagonal_match(1,
-                                     (row, col),
-                                     (row-1, col-1),
-                                     -1,
-                                     -1)
-            if (resp > (-1, -1)):
-                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-                match_found = True
-                break
-        if match_found:
-            break
+    matched_cell = check_diagonal_connect_four()
+    if (not matched_cell == None):
+        result = FILLED_CELL_INDICIES[grid[matched_cell[0]][matched_cell[1]]]
 
     if result > -1:
         print(f"STOP!!\n... \nPlayer {result+1} WINS! {FILLED_CELL_LIST[result][1]}")
         return True
-def check_diagonal_match(count, cell, target, increment_row, increment_col):
-    # Checks for a sequential match of 4 in the direction set by incrementing values
-    # Count should be passed in as 1 initially, as each non-empty cell is the 1st item in the start of its own chain
-    # Validate target increment values to make sure we have not hit the edge of the grid
-    if target[0] > grid_rows - 1 or target[0] < 0:
-        return (-1, -1)
-    if target[1] > grid_columns - 1 or target[1] < 0:
-        return (-1, -1)
+def check_diagonal_connect_four():
+    def is_winning_diagonal(start_row, start_col, row_increment, col_increment):
+        MATCH_COUNT_NEEDED = 4
+        current_piece = grid[start_row][start_col]
+        match_count = 1
 
-    if cell == EMPTY_CELL:
-        count = 1
-    elif(count == 3):
-        # Base case: if we need one more match
-        if grid[cell[0]][cell[1]] == grid[target[0]][target[1]]:
-            # if this cell matches the target cell
-            return (target[0], target[1])
-    else: # Give it 1 if its not a match, 2 if it is,
-        if grid[cell[0]][cell[1]] == grid[target[0]][target[1]]:
-            # if this cell matches the target cell then increase count and call again
-            count += 1
-        else:
-            count = 1
+        for i in range(1, MATCH_COUNT_NEEDED):
+            next_row = start_row + i * row_increment
+            next_col = start_col + i * col_increment
+            if not (0 <= next_row < grid_rows and 0 <= next_col < grid_columns):
+                break
+            if grid[next_row][next_col] == current_piece:
+                match_count += 1
+                if match_count == MATCH_COUNT_NEEDED:
+                    return next_row, next_col  # Return the winning cell coordinates
+            else:
+                break
 
-    result = check_diagonal_match(
-        count,
-        target,
-        (target[0] + increment_row, target[1] + increment_col),
-        increment_row,
-        increment_col
-    )
+        return None
 
-    if result != (-1, -1):
-        return result
+    # Check diagonals from top-left to bottom-right (↘)
+    for row in range(grid_rows):
+        for col in range(grid_columns):
+            if grid[row][col] != EMPTY_CELL:
+                winning_cell = is_winning_diagonal(row, col, 1, 1)
+                if winning_cell:
+                    return winning_cell
 
-    # If no match found in the recursive call, continue the search
-    return (-1, -1)
+    # Check diagonals from top-right to bottom-left (↙)
+    for row in range(grid_rows):
+        for col in range(grid_columns - 1, -1, -1):
+            if grid[row][col] != EMPTY_CELL:
+                winning_cell = is_winning_diagonal(row, col, 1, -1)
+                if winning_cell:
+                    return winning_cell
+
+    return None
 
 def test_diagonal():
     global grid
@@ -276,54 +210,8 @@ def test_diagonal():
     render_grid()
 
     # Check diagonal chain
-    match_found = False
-    for row in range(grid_rows):
-        for col in range(grid_columns):
-            # Check diagonal cells in SE direction
-            resp = check_diagonal_match(1,
-                                        (row, col),
-                                        (row + 1, col + 1),
-                                        1,
-                                        1)
-            if (resp > (-1, -1)):
-                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-                match_found = True
-                break
-
-            # Check diagonal cells in NE direction
-            resp = check_diagonal_match(1,
-                                        (row, col),
-                                        (row - 1, col + 1),
-                                        -1,
-                                        1)
-            if (resp > (-1, -1)):
-                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-                match_found = True
-                break
-
-            # Check diagonal cells in SW direction
-            resp = check_diagonal_match(1,
-                                        (row, col),
-                                        (row + 1, col - 1),
-                                        1,
-                                        -1)
-            if (resp > (-1, -1)):
-                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-                match_found = True
-                break
-
-            # Check diagonal cells in NW direction
-            resp = check_diagonal_match(1,
-                                        (row, col),
-                                        (row - 1, col - 1),
-                                        -1,
-                                        -1)
-            if (resp > (-1, -1)):
-                result = FILLED_CELL_INDICIES[grid[resp[0]][resp[1]]]
-                match_found = True
-                break
-        if match_found:
-            print(f"Check: {resp}\n{grid[resp[0]][resp[1]]}")
+    match_found = check_diagonal_connect_four()
+    print(match_found)
 
 def main():
     global grid, current_player, total_players
@@ -364,5 +252,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    test_diagonal()
+    main()
+    # test_diagonal()
