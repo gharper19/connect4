@@ -1,6 +1,6 @@
 # Connect4 Terminal Game
 
-![Connect 4 - Magic in the Terminal](images/connect4.png) 
+<img src="path_to_image.jpg" alt="Connect 4 - Magic in the Terminal" width="500" />
 *Experience the magic of Connect 4 in your terminal. Simple, yet oddly mesmerizing.*
 
 ## What Is This?
