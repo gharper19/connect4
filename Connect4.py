@@ -64,9 +64,10 @@ def handle_player_input():
         user_input = input("Enter the column of your selected cell: ")
         try:
             # Validate column selection
-            assert isinstance(int(user_input), int)
             user_input = int(user_input)
+            assert isinstance(user_input, int)
             assert user_input <= grid_columns
+            assert user_input > 0
 
             # Convert to index
             column_selection = user_input - 1
@@ -76,7 +77,7 @@ def handle_player_input():
                 if i == 0:
                     # Check first row
                     if grid[i][column_selection] in FILLED_CELL_LIST:
-                        print("Thats taken. Invalid.")
+                        print("What are you doing? That column is full.")
                         raise Exception
                 elif grid[i][column_selection] in FILLED_CELL_LIST:
                     # Get previous
@@ -111,7 +112,7 @@ def check_game_over():
 
     # Evaluate result
     if result == 0:
-        print("Draw! No winner.")
+        run_draw_sequence()
         return True
 
     # Check player win
@@ -209,18 +210,6 @@ def check_diagonal_connect_four():
 
     return None
 
-def test_diagonal():
-    global grid
-    for r in range(grid_rows):
-        for c in range(grid_columns):
-            if r > 1:
-                grid[r][c] = FILLED_CELL_LIST[1]
-    render_grid()
-
-    # Check diagonal chain
-    match_found = check_diagonal_connect_four()
-    print(match_found)
-
 def run_intro():
     # Intro text
     intro_text = "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n" + "Connect 4 : Connect 4 to win!!\n" + "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n"
@@ -231,15 +220,18 @@ def run_player_win_sequence(player):
     win_text = "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n" + f"Player {player+1} WINS!! {FILLED_CELL_LIST[player][1]}\n" + "+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=\n"
     print(win_text)
 
+def run_draw_sequence():
+    # Draw text
+    draw_text = "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n" + f"DRAW! Victory was abandoned.\n" + "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
+    print(draw_text)
+
 def main():
     global grid, current_player, total_players
-    # global current_player
     run_flag = True
-
-    run_intro()
 
     # Initialize Game
     current_player = 1
+    run_intro()
 
     # Game loop
     while (run_flag):
@@ -276,4 +268,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # test_diagonal()
